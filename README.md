@@ -1,9 +1,10 @@
 # Semantic Web Knowledge Graph - Research Photo Sharing Platform
 
-A comprehensive, production-ready web application demonstrating a **Secure Knowledge Graph Federation System** that integrates all major Semantic Web standards: RDF, OWL, SPARQL, ODRL, and UMA.
+A comprehensive, production-ready web application demonstrating a **Secure Knowledge Graph Federation System** that integrates all major Semantic Web standards: RDF, OWL, SPARQL, ODRL, and UMA with **OpenID Connect (OIDC) authentication**.
 
 ![Semantic Web Technologies](https://img.shields.io/badge/Semantic%20Web-RDF%20|%20OWL%20|%20SPARQL%20|%20ODRL%20|%20UMA-blue)
 ![React](https://img.shields.io/badge/React-18.2.0-61dafb)
+![OIDC](https://img.shields.io/badge/Auth-OIDC-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 ## 🎯 Project Overview
@@ -15,6 +16,25 @@ This educational project demonstrates how modern Semantic Web technologies work 
 - **SPARQL** - Query language for RDF data
 - **ODRL (Open Digital Rights Language)** - Usage policies and permissions
 - **UMA (User-Managed Access)** - Authorization and access control
+- **OIDC (OpenID Connect)** - Secure authentication with industry-standard providers
+
+## 🔐 Authentication
+
+The application supports **two authentication modes**:
+
+### Demo Mode (Default)
+- No configuration required
+- Mock users for testing and demonstration
+- User switching via UI button
+- Perfect for learning and development
+
+### OIDC Mode (Production-Ready)
+- Real authentication with OIDC providers (Auth0, Keycloak, Google, Azure AD, etc.)
+- Secure token-based authentication
+- In-memory session management
+- Production-grade security
+
+**Quick Setup**: See [OIDC Setup Guide](docs/OIDC_SETUP.md) for step-by-step configuration.
 
 ## ✨ Features
 
@@ -35,6 +55,7 @@ This educational project demonstrates how modern Semantic Web technologies work 
 - Resource owners approve/deny access requests
 - Time-limited permissions with configurable actions
 - Complete audit trail of access decisions
+- Works with both demo users and OIDC identities
 
 ### 📋 ODRL Policy Management
 - Define fine-grained usage policies for each photo
@@ -62,7 +83,12 @@ This educational project demonstrates how modern Semantic Web technologies work 
 Frontend:
 ├── React 18.2.0          # UI framework
 ├── React Router 6.20     # Client-side routing
-└── date-fns 2.30         # Date formatting
+├── date-fns 2.30         # Date formatting
+└── react-oidc-context    # OIDC authentication
+
+Authentication:
+├── oidc-client-ts        # OIDC protocol client
+└── In-memory sessions    # Secure token storage
 
 Semantic Web:
 ├── N3.js 1.17            # RDF triple store
@@ -79,6 +105,14 @@ Build Tools:
 ┌─────────────────────────────────────────────────────────┐
 │                    Application Layer                    │
 │  (Browse, Query, Access Control, Policy Management)     │
+└─────────────────────────────────────────────────────────┘
+                           ↓
+┌─────────────────────────────────────────────────────────┐
+│                  Authentication Layer                    │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐             │
+│  │   OIDC   │  │ Session  │  │   User   │             │
+│  │ Provider │←→│ Manager  │←→│ Context  │             │
+│  └──────────┘  └──────────┘  └──────────┘             │
 └─────────────────────────────────────────────────────────┘
                            ↓
 ┌─────────────────────────────────────────────────────────┐
@@ -116,12 +150,20 @@ Build Tools:
    npm install
    ```
 
-3. **Start the development server**
+3. **Start in Demo Mode** (no configuration required)
    ```bash
    npm run dev
    ```
+   
+4. **Or Configure OIDC Authentication** (optional)
+   ```bash
+   cp .env.example .env
+   # Edit .env with your OIDC provider details
+   # See docs/OIDC_SETUP.md for detailed instructions
+   npm run dev
+   ```
 
-4. **Open your browser**
+5. **Open your browser**
    Navigate to `http://localhost:3000`
 
 ### Build for Production
@@ -431,11 +473,18 @@ Potential extensions for deeper learning:
 ```
 semanticWeb/
 ├── src/
+│   ├── components/         # Reusable React components
+│   │   └── OidcProvider.jsx # OIDC authentication provider
+│   │
+│   ├── config/             # Configuration files
+│   │   └── oidcConfig.js   # OIDC settings
+│   │
 │   ├── services/           # Core semantic web services
 │   │   ├── rdfStore.js     # RDF triple store & OWL ontology
 │   │   ├── sparqlEngine.js # SPARQL query processor
 │   │   ├── odrlManager.js  # ODRL policy manager
 │   │   ├── umaAccessControl.js # UMA authorization
+│   │   ├── sessionManager.js # Authentication session
 │   │   └── queryLogger.js  # Audit logging
 │   │
 │   ├── pages/              # React page components
@@ -444,16 +493,32 @@ semanticWeb/
 │   │   ├── MyResources.jsx
 │   │   ├── AccessRequests.jsx
 │   │   ├── PolicyViewer.jsx
-│   │   └── AuditLog.jsx
+│   │   ├── AuditLog.jsx
+│   │   └── CallbackPage.jsx # OIDC callback handler
 │   │
 │   ├── App.jsx             # Main application
 │   ├── main.jsx            # Entry point
 │   └── index.css           # Global styles
 │
+├── docs/                   # Documentation
+│   ├── OIDC_SETUP.md      # Authentication setup guide
+│   ├── OIDC_SECURITY.md   # Security best practices
+│   ├── ARCHITECTURE.md    # Technical architecture
+│   └── ...                # Additional documentation
+│
+├── .env.example            # Environment configuration template
 ├── package.json
 ├── vite.config.js
 └── README.md
 ```
+
+## 📚 Documentation
+
+- **[OIDC Setup Guide](docs/OIDC_SETUP.md)** - Step-by-step authentication configuration
+- **[Security Guide](docs/OIDC_SECURITY.md)** - Security best practices and compliance
+- **[Architecture](docs/ARCHITECTURE.md)** - Technical design and implementation
+- **[Features](docs/FEATURES.md)** - Comprehensive feature documentation
+- **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues and solutions
 
 ## 🤝 Contributing
 
@@ -471,6 +536,7 @@ This is an educational project. Feel free to:
 - [SPARQL 1.1 Query Language](https://www.w3.org/TR/sparql11-query/)
 - [OWL 2 Primer](https://www.w3.org/TR/owl2-primer/)
 - [ODRL Information Model](https://www.w3.org/TR/odrl-model/)
+- [OpenID Connect Core](https://openid.net/specs/openid-connect-core-1_0.html)
 
 ### Research Papers
 - SaFE-KG: Secure and Federated Knowledge Graphs
@@ -481,6 +547,7 @@ This is an educational project. Feel free to:
 - [N3.js](https://github.com/rdfjs/N3.js) - RDF library for JavaScript
 - [JSON-LD](https://json-ld.org/) - JSON for Linking Data
 - [Apache Jena](https://jena.apache.org/) - RDF framework (Java)
+- [react-oidc-context](https://github.com/authts/react-oidc-context) - OIDC for React
 
 ## 📄 License
 
@@ -492,6 +559,7 @@ This project demonstrates concepts from:
 - W3C Semantic Web Activity
 - SaFE-KG research initiative
 - UMA Working Group
+- OpenID Foundation
 - Semantic Web community
 
 ## 💡 About This Project
