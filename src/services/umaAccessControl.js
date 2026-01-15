@@ -4,8 +4,9 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import { sessionManager } from './sessionManager';
 
-// Mock user database
+// Mock user database (used in demo mode when OIDC is not configured)
 export const users = {
   alice: {
     id: 'alice',
@@ -32,6 +33,26 @@ export const users = {
     role: 'researcher'
   }
 };
+
+/**
+ * Get current user (from OIDC or demo mode)
+ * @param {Object} currentUser - Current user object passed from App
+ * @returns {Object} User object with id, name, email
+ */
+export function getCurrentUser(currentUser) {
+  // If we have a real OIDC user, use it
+  if (sessionManager.isAuthenticated()) {
+    return {
+      id: sessionManager.getUserId(),
+      name: sessionManager.getUserName(),
+      email: sessionManager.getUserEmail(),
+      role: 'researcher'
+    };
+  }
+  
+  // Otherwise use the provided demo user
+  return currentUser || users.alice;
+}
 
 // Resource ownership mapping
 const resourceOwnership = {
