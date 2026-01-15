@@ -13,11 +13,12 @@ const photoImages = {
 };
 
 function PhotoCard({ photo, currentUser, onRequestAccess, onViewDetails }) {
-  const photoId = photo.photo.value.split('/').pop();
-  const title = photo.title?.value || 'Untitled';
-  const creator = photo.creator?.value || 'Unknown';
-  const date = photo.date?.value || 'Unknown date';
-  const description = photo.description?.value || 'No description';
+  // Safely extract photo ID from the URI
+  const photoId = photo['?photo']?.value?.split('/').pop() || photo.photo?.value?.split('/').pop() || 'unknown';
+  const title = photo['?title']?.value || photo.title?.value || 'Untitled';
+  const creator = photo['?creator']?.value || photo.creator?.value || 'Unknown';
+  const date = photo['?date']?.value || photo.date?.value || 'Unknown date';
+  const description = photo['?description']?.value || photo.description?.value || 'No description';
 
   const owner = umaAccessControl.getResourceOwner(photoId);
   const isOwner = owner === currentUser.id;
@@ -249,7 +250,12 @@ WHERE {
     query += '\n}';
 
     const results = sparqlEngine.executeQuery(query);
-    setPhotos(results.results || []);
+    // Ensure we have valid results
+    if (results && results.results && Array.isArray(results.results)) {
+      setPhotos(results.results);
+    } else {
+      setPhotos([]);
+    }
   };
 
   const handleRequestAccess = (photoId) => {
